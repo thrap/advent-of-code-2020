@@ -5,6 +5,7 @@ fn main() {
         .collect::<Vec<u32>>();
 
     println!("{}", part1(&input));
+    println!("{}", part2(&input));
 }
 
 fn part1(input: &Vec<u32>) -> u32 {
@@ -15,5 +16,18 @@ fn part1(input: &Vec<u32>) -> u32 {
             }
         }
     }
-    0
+    panic!()
+}
+
+fn part2(input: &Vec<u32>) -> u32 {
+    for x in input.iter() {
+        for y in input.iter() {
+            for z in input.iter() {
+                if x + y + z == 2020 {
+                    return x * y * z
+                }
+            }
+        }
+    }
+    panic!()
 }
