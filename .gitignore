@@ -20,4 +20,5 @@ node_modules
 .aocrunner.json
 .prettierignore
 .prettierrc.json
-src/day*/README.md
+javascript/src/day*/README.md
+javascript/README.md
