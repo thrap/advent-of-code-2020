@@ -18,7 +18,27 @@ const part1 = (rawInput) => {
 }
 
 const part2 = (rawInput) => {
-  return
+  const input = [0].concat(parseInput(rawInput).sort((a,b) => a-b))
+  input.push(input[input.length-1]+3)
+
+  const memo = {}
+  const rec = (arr, i) => {
+    if (i >= arr.length - 1)
+      return 1
+    const str = arr.slice(i-1).join(',')
+    if (memo[str]) {
+      return memo[str]
+    }
+    var sum = 0
+    if (arr[i+1] - arr[i-1] <= 3) {
+      sum += rec(arr.slice(0, i).concat(arr.slice(i+1)), i)
+    }
+    sum += rec(arr, i+1)
+    memo[str] = sum
+    return sum
+  }
+
+  return rec(input, 1)
 }
 
 run({
