@@ -27,8 +27,17 @@ const part1 = (rawInput) => {
 
 const part2 = (rawInput) => {
   const input = parseInput(rawInput)
+  const invalid = part1(rawInput)
 
-  return
+  for (var length = 2; length < 1000; length++) {
+    for (var start = 0; start + length < input.length; start++) {
+      const nums = input.slice(start, start + length)
+      if (nums.reduce((acc, x) => acc + x, 0) == invalid) {
+        return Math.max(...nums) + Math.min(...nums)
+      }
+    }
+  }
+  return invalid
 }
 
 run({
