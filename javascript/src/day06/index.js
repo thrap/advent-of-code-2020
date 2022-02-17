@@ -2,50 +2,28 @@ import run from "aocrunner"
 
 const parseInput = (rawInput) => rawInput.split("\n\n").map(s => s.split("\n"))
 
-const part1 = (rawInput) => {
-  const input = parseInput(rawInput)
-
-  return input.reduce((acc, ans) => acc + Object.keys(ans.reduce((acc, s) => {
-    s.split("").forEach(c => acc[c] = true)
+const count = (ans) =>
+  ans.reduce((acc, s) => {
+    s.split("").forEach(c => acc[c] = (acc[c] || 0) + 1)
     return acc
-  }, {})).length, 0)
+  }, {})
+
+const part1 = (input) => {
+  return parseInput(input).reduce((acc, ans) => acc + Object.keys(count(ans)).length, 0)
 }
 
-const part2 = (rawInput) => {
-  const input = parseInput(rawInput)
-
-  return
+const part2 = (input) => {
+  const answerCount = parseInput(input).map(ans =>
+    Object.values(count(ans)).filter(x => x == ans.length).length
+  )
+  return answerCount.reduce((acc, count) => acc + count, 0)
 }
 
-const part1Input = `abc
-
-a
-b
-c
-
-ab
-ac
-
-a
-a
-a
-a
-
-b`
-const part2Input = part1Input
 run({
   part1: {
-    tests: [
-      { input: part1Input, expected: "" }
-    ],
     solution: part1,
   },
   part2: {
-    tests: [
-      { input: part2Input, expected: "" }
-    ],
     solution: part2,
   },
-  trimTestInputs: true,
-  onlyTests: false,
 })
