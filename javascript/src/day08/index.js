@@ -5,8 +5,7 @@ const parseInput = (rawInput) => rawInput.split('\n').map(line => {
   return [op, +arg]
 })
 
-const part1 = (rawInput) => {
-  const program = parseInput(rawInput)
+const execute = (program) => {
   var acc = 0
   var point = 0
 
@@ -16,48 +15,37 @@ const part1 = (rawInput) => {
     const [op, arg] = program[point];
     if (op == 'acc') {
       acc += arg
-      point++
     }
-    if (op == 'nop') {
-      point++
-    }
-    if (op == 'jmp') {
-      point += arg
-    }
+    point += op == 'jmp' ? arg : 1
   }
+  return [acc, point == program.length]
 
-  return acc
 }
+
+const part1 = (rawInput) => {
+  const program = parseInput(rawInput)
+  return execute(program)[0]
+}
+
 
 const part2 = (rawInput) => {
-  const input = parseInput(rawInput)
+  const program = parseInput(rawInput)
 
-  return
+  const swap = s => s == 'nop' ? 'jmp' : (s == 'jmp' ? 'nop' : s)
+  for(var i = 0; i < program.length; i++) {
+    program[i][0] = swap(program[i][0])
+    const [acc, terminates] = execute(program)
+    if (terminates)
+      return acc
+    program[i][0] = swap(program[i][0])
+  }
 }
 
-const part1Input = `nop +0
-acc +1
-jmp +4
-acc +3
-jmp -3
-acc -99
-acc +1
-jmp -4
-acc +6`
-const part2Input = part1Input
 run({
   part1: {
-    tests: [
-      { input: part1Input, expected: 5 }
-    ],
     solution: part1,
   },
   part2: {
-    tests: [
-      { input: part2Input, expected: "" }
-    ],
     solution: part2,
   },
-  trimTestInputs: true,
-  onlyTests: false,
 })
