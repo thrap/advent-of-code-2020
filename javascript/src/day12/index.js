@@ -32,7 +32,36 @@ const part1 = (rawInput) => {
 }
 
 const part2 = (rawInput) => {
-  return
+  const input = parseInput(rawInput).map(l => [l[0], +l.substr(1)])
+  const pos = [0,0]
+  var way = [-1,10]
+
+  input.forEach(([action, val]) => {
+    if (action == 'N') {
+      way[0] -= val
+    } else if (action == 'S') {
+      way[0] += val
+    } else if (action == 'E') {
+      way[1] += val
+    } else if (action == 'W') {
+      way[1] -= val
+    } else if (action == 'R') {
+      var steps = val/90
+      for(var i = 0; i < steps; i++) {
+        way = [way[1], -way[0]]
+      }
+    } else if (action == 'L') {
+      var steps = val/90
+      for(var i = 0; i < steps; i++) {
+        way = [-way[1], way[0]]
+      }
+    } else if (action == 'F') {
+      pos[0] += way[0] * val
+      pos[1] += way[1] * val
+    }
+  });
+
+  return Math.abs(pos[0]) + Math.abs(pos[1])
 }
 
 run({
