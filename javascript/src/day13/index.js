@@ -20,25 +20,29 @@ const part1 = (rawInput) => {
 }
 
 const part2 = (rawInput) => {
-  return
+  const [_, str] = parseInput(rawInput)
+  const busses = str.replace(/x/g, 1).split(',').map(b => +b)
+  const factors = busses.map((b, i) => [b, i])
+
+  var x = 0
+  var step = 1
+
+  for (var i = 0; i < factors.length; i++) {
+    var [p, dx] = factors[i]
+    while ((x + dx) % p != 0) {
+      x += step
+    }
+    step *= p
+  }
+
+  return x
 }
 
-const part1Input = `939
-7,13,x,x,59,x,31,19`
-const part2Input = part1Input
 run({
   part1: {
-    tests: [
-      { input: part1Input, expected: 295 }
-    ],
     solution: part1,
   },
   part2: {
-    tests: [
-      { input: part2Input, expected: 1068781 }
-    ],
     solution: part2,
   },
-  trimTestInputs: true,
-  onlyTests: false,
 })
