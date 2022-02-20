@@ -51,9 +51,64 @@ const part1 = (rawInput) => {
 }
 
 const part2 = (rawInput) => {
-  const input = parseInput(rawInput)
+  var state = [[parseInput(rawInput)]]
+  var dirs = []
+  for(var i = -1; i <= 1; i++) {
+    for(var j = -1; j <= 1; j++) {
+      for(var k = -1; k <= 1; k++) {
+        for(var l = -1; l <= 1; l++) {
+          if (i != 0 || j != 0 || k != 0 || l != 0)
+            dirs.push([i,j,k,l])
+        }
+      }
+    }
+  }
 
-  return
+  const step = (state) => {
+    var newState = Array(state.length + 2).fill(0).map(
+      _ => Array(state[0].length + 2).fill(0).map(
+        _ => Array(state[0][0].length + 2).fill(0).map(
+          _ => Array(state[0][0][0].length + 2).fill(0)
+        )
+      )
+    )
+
+    for(var i = 0; i < newState.length; i++) {
+      for(var j = 0; j < newState[0].length; j++) {
+        for(var k = 0; k < newState[0][0].length; k++) {
+          for(var l = 0; l < newState[0][0][0].length; l++) {
+            const active = dirs.reduce((acc, [di, dj, dk, dl]) =>
+              acc + ((((state[i+di-1]||[])[j+dj-1]||[])[k+dk-1]||[])[l+dl-1] ? 1 : 0),
+            0)
+
+            if ((((state[i-1]||[])[j-1]||[])[k-1]||[])[l-1]) {
+              newState[i][j][k][l] = active == 2 || active == 3
+            } else {
+              newState[i][j][k][l] = active == 3
+            }
+          }
+        }
+      }
+    }
+    return newState
+  }
+
+  for(var cycle = 1; cycle <= 6; cycle++) {
+    state = step(state)
+  }
+
+  var count = 0
+  for(var i = 0; i < state.length; i++) {
+    for(var j = 0; j < state[0].length; j++) {
+      for(var k = 0; k < state[0][0].length; k++) {
+        for(var l = 0; l < state[0][0][0].length; l++) {
+          count += state[i][j][k][l] ? 1 : 0
+        }
+      }
+    }
+  }
+
+  return count
 }
 
 const part1Input = `.#.
@@ -69,7 +124,7 @@ run({
   },
   part2: {
     tests: [
-      { input: part2Input, expected: "" }
+      { input: part2Input, expected: 848 }
     ],
     solution: part2,
   },
