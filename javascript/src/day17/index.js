@@ -20,10 +20,10 @@ const part1 = (rawInput) => {
       for(var j = 0; j < newState[0].length; j++) {
         for(var k = 0; k < newState[0][0].length; k++) {
           const active = dirs.reduce((acc, [di, dj, dk]) =>
-            acc + (((state[i+di-1]||[])[j+dj-1]||[])[k+dk-1] ? 1 : 0),
+            acc + (state[i+di-1]?.[j+dj-1]?.[k+dk-1] ? 1 : 0),
           0)
 
-          if (((state[i-1]||[])[j-1]||[])[k-1]) {
+          if (state[i-1]?.[j-1]?.[k-1]) {
             newState[i][j][k] = active == 2 || active == 3
           } else {
             newState[i][j][k] = active == 3
@@ -78,10 +78,10 @@ const part2 = (rawInput) => {
         for(var k = 0; k < newState[0][0].length; k++) {
           for(var l = 0; l < newState[0][0][0].length; l++) {
             const active = dirs.reduce((acc, [di, dj, dk, dl]) =>
-              acc + ((((state[i+di-1]||[])[j+dj-1]||[])[k+dk-1]||[])[l+dl-1] ? 1 : 0),
+              acc + (state[i+di-1]?.[j+dj-1]?.[k+dk-1]?.[l+dl-1] ? 1 : 0),
             0)
 
-            if ((((state[i-1]||[])[j-1]||[])[k-1]||[])[l-1]) {
+            if (state[i-1]?.[j-1]?.[k-1]?.[l-1]) {
               newState[i][j][k][l] = active == 2 || active == 3
             } else {
               newState[i][j][k][l] = active == 3
