@@ -26,14 +26,12 @@ const part1 = (rawInput) => {
         destination = max
       }
     }
-
     const filtered = cups.filter(c => !pickUp.includes(c))
     const destIndex = filtered.indexOf(destination)
     const newCups = filtered.slice(0, destIndex+1).concat(pickUp).concat(filtered.slice(destIndex+1))
 
     return [(newCups.indexOf(current) + 1)%newCups.length, newCups]
   }
-
   var current = 0
   for (var moves = 1; moves <= 100; moves++) {
     [current, cups] = move(current, cups)
@@ -48,9 +46,86 @@ const part1 = (rawInput) => {
 }
 
 const part2 = (rawInput) => {
-  const input = parseInput(rawInput)
+  var cups = parseInput(rawInput)
 
-  return
+  const min = Math.min(...cups)
+  const max = Math.max(...cups)
+
+  for (var i = max+1; i <= 20; i++) {
+    cups.push(i)
+  }
+
+
+  const clockwise = {}
+  for (var i = 0; i < cups.length; i++) {
+    clockwise[cups[i]] = cups[(i+1) % cups.length]
+  }
+  console.log(clockwise);
+
+
+  const move = (index, cups) => {
+    const current = cups[index]
+    const pickUp = []
+
+    const testPickUp = []
+    testPickUp.push(clockwise[current])
+    testPickUp.push(clockwise[clockwise[current]])
+    testPickUp.push(clockwise[clockwise[clockwise[current]]])
+
+    const temp2 = clockwise[clockwise[clockwise[clockwise[current]]]]
+    /*console.log('Current: ', current, '(', index, ')');
+    console.log('cups: ', cups.join(' '));*/
+
+
+    for (var i = 1; i <= 3; i++) {
+      pickUp.push(cups[(index+i)%cups.length])
+    }
+
+    //console.log(pickUp, testPickUp);
+
+    var destination = current - 1
+    if (destination < min) {
+      destination = max
+    }
+    while (pickUp.includes(destination)) {
+      destination--
+      if (destination < min) {
+        destination = max
+      }
+    }
+
+    //console.log(destination);
+    var temp = clockwise[destination]
+    clockwise[destination] = testPickUp[0]
+    clockwise[testPickUp[0]] = testPickUp[1]
+    clockwise[testPickUp[1]] = testPickUp[2]
+    clockwise[testPickUp[2]] = temp
+    clockwise[current] = temp2
+
+    const filtered = cups.filter(c => !pickUp.includes(c))
+    const destIndex = filtered.indexOf(destination)
+    const newCups = filtered.slice(0, destIndex+1).concat(pickUp).concat(filtered.slice(destIndex+1))
+    /*console.log("pick up: ", pickUp.join(' '))
+    console.log('destination', destination);
+    console.log();*/
+
+    return [(newCups.indexOf(current) + 1)%newCups.length, newCups]
+  }
+  var current = 0
+  for (var moves = 1; moves <= 10000; moves++) {
+    if (moves % 105 == 0) {
+      console.log(cups.slice(cups.indexOf(1)+1, cups.indexOf(1)+3));
+      console.log([clockwise[1],clockwise[clockwise[1]]]);
+    }
+    [current, cups] = move(current, cups)
+  }
+
+  /*var str = ''
+  for (var i = cups.indexOf(1) + 1; cups[i % cups.length] != 1; i++) {
+    str += cups[i % cups.length]
+  }
+
+  return str*/
 }
 
 const part1Input = `389125467`
