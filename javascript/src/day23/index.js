@@ -2,98 +2,29 @@ import run from "aocrunner"
 
 const parseInput = (rawInput) => rawInput.split('').map(x => +x)
 
-const part1 = (rawInput) => {
-  var cups = parseInput(rawInput)
-
-  const min = Math.min(...cups)
-  const max = Math.max(...cups)
-
-  const move = (index, cups) => {
-    const current = cups[index]
-    const pickUp = []
-
-    for (var i = 1; i <= 3; i++) {
-      pickUp.push(cups[(index+i)%cups.length])
-    }
-
-    var destination = current - 1
-    if (destination < min) {
-      destination = max
-    }
-    while (pickUp.includes(destination)) {
-      destination--
-      if (destination < min) {
-        destination = max
-      }
-    }
-    const filtered = cups.filter(c => !pickUp.includes(c))
-    const destIndex = filtered.indexOf(destination)
-    const newCups = filtered.slice(0, destIndex+1).concat(pickUp).concat(filtered.slice(destIndex+1))
-
-    return [(newCups.indexOf(current) + 1)%newCups.length, newCups]
-  }
-  var current = 0
-  for (var moves = 1; moves <= 100; moves++) {
-    [current, cups] = move(current, cups)
-  }
-
-  var str = ''
-  for (var i = cups.indexOf(1) + 1; cups[i % cups.length] != 1; i++) {
-    str += cups[i % cups.length]
-  }
-
-  return str
-}
-
-const part2 = (rawInput) => {
-  var cups = parseInput(rawInput)
-
-  const min = Math.min(...cups)
-  const max = Math.max(...cups)
-
-  var limit = 1000000
-  var steps = 10000000
-
-  for (var i = max+1; i <= limit; i++) {
-    cups.push(i)
-  }
-
-
+const doSteps = (cups, steps) => {
   const clockwise = {}
-  console.log(cups.length);
   for (var i = 0; i < cups.length; i++) {
     clockwise[cups[i]] = cups[(i+1) % cups.length]
   }
 
   const move = (current) => {
-    const testPickUp = []
-    testPickUp.push(clockwise[current])
-    testPickUp.push(clockwise[clockwise[current]])
-    testPickUp.push(clockwise[clockwise[clockwise[current]]])
+    const pick = []
+    pick.push(clockwise[current])
+    pick.push(clockwise[pick[0]])
+    pick.push(clockwise[pick[1]])
 
-    const temp2 = clockwise[clockwise[clockwise[clockwise[current]]]]
-    /*console.log('Current: ', current, '(', index, ')');
-    console.log('cups: ', cups.join(' '));*/
-
-
-    var destination = current - 1
-    if (destination < min) {
-      destination = limit
-    }
-    while (testPickUp.includes(destination)) {
-      destination--
-      if (destination < min) {
-        destination = limit
-      }
+    var destination = current - 1 || cups.length
+    while (pick.includes(destination)) {
+      destination = destination - 1 || cups.length
     }
 
-    //console.log(destination);
-    var temp = clockwise[destination]
-    clockwise[destination] = testPickUp[0]
-    clockwise[testPickUp[0]] = testPickUp[1]
-    clockwise[testPickUp[1]] = testPickUp[2]
-    clockwise[testPickUp[2]] = temp
-    clockwise[current] = temp2
+    clockwise[current] = clockwise[pick[2]]
+
+    clockwise[pick[0]] = pick[1]
+    clockwise[pick[1]] = pick[2]
+    clockwise[pick[2]] = clockwise[destination]
+    clockwise[destination] = pick[0]
 
     return clockwise[current]
   }
@@ -103,11 +34,36 @@ const part2 = (rawInput) => {
     current = move(current)
   }
 
-  const ret = [1]
-  for(var i = 0; i < 10; i++) {
-    ret.push(clockwise[ret[i]])
+  return clockwise
+}
+
+const part1 = (rawInput) => {
+  var cups = parseInput(rawInput)
+
+  const clockwise = doSteps(cups, 100)
+
+  var str = ''
+  var current = clockwise[1]
+  while (current != 1) {
+    str += current
+    current = clockwise[current]
   }
-  return ret[1]*ret[2]
+
+  return str
+}
+
+const part2 = (rawInput) => {
+  var cups = parseInput(rawInput)
+
+  var limit = 1000000
+
+  for (var i = cups.length+1; i <= limit; i++) {
+    cups.push(i)
+  }
+
+  const clockwise = doSteps(cups, 10000000)
+
+  return clockwise[1] * clockwise[clockwise[1]]
 }
 
 const part1Input = `389125467`
@@ -121,10 +77,8 @@ run({
   },
   part2: {
     tests: [
-      { input: part2Input, expected: "" }
+      { input: part2Input, expected: 149245887792 }
     ],
     solution: part2,
   },
-  trimTestInputs: true,
-  onlyTests: false,
 })
